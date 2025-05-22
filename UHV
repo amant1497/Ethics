@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: Unethical Practices Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Report Info: Exec Summary & Intro -> Goal: Introduce topic & impact -> Presentation: Text blocks, dynamic stat displays (e.g., $1.228T impact) -> Interaction: Static display -> Justification: Concise overview -> Library/Method: HTML/JS.
+        - Report Info: Table 1 (Unethical Practices) -> Goal: Explore types of misconduct -> Presentation: Interactive cards for categories (Financial, Workplace etc.), showing details -> Interaction: Click to reveal practice details -> Justification: Organizes diverse practices for easy browsing -> Library/Method: HTML/JS.
+        - Report Info: OECD Bribery Data (60% in specific sectors) -> Goal: Show sector concentration of bribery -> Presentation: Pie Chart -> Interaction: Hover for tooltips -> Justification: Visualizes proportions effectively -> Library/Method: Chart.js.
+        - Report Info: Section 3 & Table 2 (Root Causes) -> Goal: Explore drivers of unethical behavior -> Presentation: Interactive cards for cause categories (Organizational, Individual etc.) -> Interaction: Click to reveal cause details -> Justification: Breaks down complex causes -> Library/Method: HTML/JS.
+        - Report Info: Manager Misconduct (60%), Spreadsheet Use (>35%), Few Cross-Functional Teams (<30%) -> Goal: Quantify organizational factors -> Presentation: Bar Charts/Pie Charts -> Interaction: Hover for tooltips -> Justification: Clear visual comparison of stats -> Library/Method: Chart.js.
+        - Report Info: Section 4 (Solutions) -> Goal: Detail remedies -> Presentation: Interactive cards for solution categories (Governance, Culture etc.) -> Interaction: Click to reveal solution details -> Justification: Structures diverse solutions -> Library/Method: HTML/JS.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visuals are HTML/CSS based or Chart.js canvases.
+    -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAF8F5;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            @apply px-2 py-2 text-xs sm:px-4 sm:py-2 sm:text-sm font-medium text-gray-700 hover:text-[#8A7F70] transition-colors duration-200 whitespace-nowrap;
+        }
+        .active-nav-link {
+            @apply text-[#8A7F70] border-b-2 border-[#8A7F70];
+        }
+        .section-title {
+            @apply text-2xl sm:text-3xl font-bold text-[#8A7F70] mb-6 text-center;
+        }
+        .card {
+            @apply bg-white p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 transition-all duration-300 ease-in-out;
+        }
+        .card-title {
+            @apply text-lg sm:text-xl font-semibold text-[#BFAE99] mb-2 sm:mb-3 cursor-pointer;
+        }
+        .card-content {
+            @apply text-gray-700 text-xs sm:text-sm leading-relaxed;
+        }
+        .stat-card {
+            @apply bg-white p-4 sm:p-6 rounded-lg shadow-md text-center;
+        }
+        .stat-value {
+            @apply text-2xl sm:text-4xl font-bold text-[#8A7F70] mb-1 sm:mb-2;
+        }
+        .stat-label {
+            @apply text-xs sm:text-sm text-gray-600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Default max-width for desktop */
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px; /* Base height for mobile */
+            max-height: 350px; /* Max height for mobile */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 300px; /* Height for tablet/desktop */
+                max-height: 400px; /* Max height for tablet/desktop */
+                max-width: 700px;
+            }
+        }
+        .details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .details.open {
+            max-height: 2000px; /* Adjust as needed for content */
+            transition: max-height 0.7s ease-in;
+        }
+        h3 { @apply text-base sm:text-lg font-semibold text-[#8A7F70] mt-3 sm:mt-4 mb-1 sm:mb-2; }
+        ul { @apply list-disc list-inside pl-2 sm:pl-4 mb-2 sm:mb-3; }
+        li { @apply mb-0.5 sm:mb-1; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-2 flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-lg sm:text-xl font-bold text-[#8A7F70] mb-2 sm:mb-0">Ethical Practices Interactive Report</h1>
+            <nav class="flex overflow-x-auto pb-2 sm:pb-0">
+                <a href="#overview" class="nav-link active-nav-link">Overview &nbsp;</a>
+                <a href="#practices" class="nav-link">Practices &nbsp;</a>
+                <a href="#causes" class="nav-link">Root Causes &nbsp;</a>
+                <a href="#solutions" class="nav-link">Solutions</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+
+        <section id="overview" class="py-8 sm:py-12">
+            <h2 class="section-title"><b>Navigating the Ethical Landscape</b></h2>
+            <div class="max-w-3xl mx-auto text-center mb-6 sm:mb-10">
+                <p class="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                    Professional integrity is the cornerstone of trust in society. This report explores the complex array of unethical practices in contemporary professions, from financial malfeasance to workplace misconduct and emerging technological challenges. Understanding these issues is the first step towards fostering a more ethical future.
+                </p>
+                <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                    Ethical breaches often stem from a confluence of factors including leadership failures, performance pressures, and inadequate reporting mechanisms. Addressing them requires a shift from mere compliance to cultivating a genuine ethical culture.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-4xl mx-auto">
+                <div class="stat-card bg-[#EAEAEA]">
+                    <div class="stat-value">$1.228 Trillion</div>
+                    <div class="stat-label">Estimated economic impact of ethical failures in major bankruptcies over the past three decades.</div>
+                </div>
+                <div class="stat-card bg-[#EAEAEA]">
+                    <div class="stat-value">$50,000</div>
+                    <div class="stat-label">Median loss per organization worldwide due to payroll fraud.</div>
+                </div>
+            </div>
+             <div class="max-w-3xl mx-auto text-left mt-6 sm:mt-10">
+                <p class="text-gray-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                    The societal and organizational impact of ethical breaches is profound, extending far beyond immediate financial losses. Unethical practices systematically erode trust, a critical intangible asset, not only among colleagues within an organization but also with external stakeholders and the broader public. Beyond monetary consequences, such behavior leads to tangible operational disruptions, including reduced productivity, increased absenteeism, and elevated employee turnover. It also severely damages an organization's reputation, potentially exposing it to costly lawsuits and significant regulatory fines.
+                </p>
+            </div>
+        </section>
+
+        <section id="practices" class="py-8 sm:py-12 bg-white rounded-lg shadow-xl my-6 sm:my-10 p-4 sm:p-8">
+            <h2 class="section-title"><b>Salient Unethical Practices</b></h2>
+            <p class="text-center text-gray-600 mb-6 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">Unethical practices manifest in various forms across professional domains. Explore the common categories of misconduct observed in contemporary professional environments by clicking on each title.</p>
+            
+            <div id="practices-container" class="space-y-3 sm:space-y-4">
+                </div>
+
+            <h3 class="text-lg sm:text-xl font-semibold text-[#8A7F70] mt-8 sm:mt-12 mb-4 sm:mb-6 text-center">Focus: Bribery in Sectors</h3>
+            <p class="text-center text-gray-600 mb-4 sm:mb-6 max-w-xl mx-auto text-sm sm:text-base">Data from the OECD indicates that a significant proportion of bribery cases occur in specific sectors.</p>
+            <div class="chart-container bg-gray-50 p-3 sm:p-4 rounded-lg shadow">
+                <canvas id="briberyChart"></canvas>
+            </div>
+        </section>
+
+        <section id="causes" class="py-8 sm:py-12 my-6 sm:my-10 p-4 sm:p-8">
+            <h2 class="section-title">Root Causes of Unethical Practices</h2>
+            <p class="text-center text-gray-600 mb-6 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">Understanding the prevalence of unethical practices requires examining their underlying causes, which often stem from individual, organizational, and systemic factors. Click on each category to learn more.</p>
+            
+            <div id="causes-container" class="space-y-3 sm:space-y-4">
+                </div>
+
+            <h3 class="text-lg sm:text-xl font-semibold text-[#8A7F70] mt-8 sm:mt-12 mb-4 sm:mb-6 text-center">Focus: Organizational Factors</h3>
+            <p class="text-center text-gray-600 mb-4 sm:mb-6 max-w-xl mx-auto text-sm sm:text-base">Certain organizational factors significantly contribute to the landscape of misconduct.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mt-6 sm:mt-8">
+                <div class="chart-container bg-white p-3 sm:p-4 rounded-lg shadow !max-w-full !h-64 md:!h-80">
+                    <canvas id="managerMisconductChart"></canvas>
+                    <p class="text-xs text-center mt-2 text-gray-500">Manager Responsibility for Misconduct</p>
+                </div>
+                <div class="chart-container bg-white p-3 sm:p-4 rounded-lg shadow !max-w-full !h-64 md:!h-80">
+                    <canvas id="spreadsheetUseChart"></canvas>
+                     <p class="text-xs text-center mt-2 text-gray-500">Misconduct Tracking Methods</p>
+                </div>
+                <div class="chart-container bg-white p-3 sm:p-4 rounded-lg shadow !max-w-full !h-64 md:!h-80">
+                    <canvas id="investigationTeamsChart"></canvas>
+                     <p class="text-xs text-center mt-2 text-gray-500">Use of Cross-Functional Investigation Teams</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="py-8 sm:py-12 bg-white rounded-lg shadow-xl my-6 sm:my-10 p-4 sm:p-8">
+            <h2 class="section-title">Comprehensive Solutions for Ethical Conduct</h2>
+            <p class="text-center text-gray-600 mb-6 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">Addressing unethical practices requires a comprehensive approach integrating robust governance, cultural transformation, continuous education, and transparent accountability. Explore these solution categories by clicking on their titles.</p>
+            
+            <div id="solutions-container" class="space-y-3 sm:space-y-4">
+                </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#BFAE99] text-white text-center py-4 sm:py-6 mt-8 sm:mt-12">
+        <p class="text-xs sm:text-base">&copy; 2024 Interactive Ethics Report. Content derived from "Navigating the Ethical Landscape" report.</p>
+    </footer>
+
+    <script>
+        // Data for the application
+        const ethicalPracticesData = [
+            {
+                category: "Financial Misconduct & Deception",
+                description: "Encompasses a range of deceptive practices aimed at personal or corporate gain, often at the expense of stakeholders.",
+                items: [
+                    { name: "Fraud", details: "Intentionally deceiving others for personal or financial benefit. Examples: Embezzling company funds, insider trading, time theft, payroll fraud, 'cooking the books'." },
+                    { name: "Bribery & Kickbacks", details: "Giving or accepting money/favors to influence decisions. Examples: Bribing officials to secure contracts, inflating invoices for personal gain." },
+                    { name: "Misappropriation of Assets", details: "Using company resources for personal interests. Examples: Skimming cash, stealing inventory/IP, misusing company computers/internet." },
+                    { name: "Misleading Customers", details: "Presenting false information to customers. Examples: Citing false terms and conditions, offering 'better prices' that are actually higher." }
+                ]
+            },
+            {
+                category: "Workplace Misconduct & Abuse",
+                description: "Encompasses behaviors that create a hostile, unsafe, or unfair environment for employees.",
+                items: [
+                    { name: "Harassment & Discrimination", details: "Unwelcome behavior creating a hostile work environment. Examples: Sexual harassment (comments, jokes, physical contact), discrimination based on protected characteristics (age, gender, race)." },
+                    { name: "Bullying & Intimidation", details: "Abusive behavior, including humiliating colleagues. Examples: Making offensive remarks, intimidating peers." },
+                    { name: "Toxic/Hostile Work Environment", details: "Pervasive negative atmosphere. Examples: Leaders bullying employees, emphasis on 'cultural fit' exacerbating negativity." },
+                    { name: "Unethical Relationships", details: "Power imbalances leading to coercion or favoritism. Examples: Superior-subordinate dating, preferential treatment based on personal ties." }
+                ]
+            },
+            {
+                category: "Breaches of Trust & Professional Standards",
+                description: "These practices undermine the fundamental integrity and reliability expected of professionals.",
+                items: [
+                    { name: "Conflicts of Interest", details: "Personal/professional interests conflicting with organizational duties. Examples: Auditors with financial stakes, lawyers double-billing." },
+                    { name: "Confidentiality Violations", details: "Disclosing sensitive information without consent. Examples: Sharing client data, proprietary company information." },
+                    { name: "Misrepresentation", details: "Providing false or misleading information. Examples: Lying on job applications, manipulating data for school ratings, false accounting." },
+                    { name: "Negligence & Poor Performance", details: "Failure to meet professional standards or duties. Examples: Not maintaining competence, poor documentation, failure to follow orders." }
+                ]
+            },
+            {
+                category: "Misuse of Company Resources & Time",
+                description: "These practices involve the unauthorized or improper use of organizational assets.",
+                items: [
+                    { name: "Time Theft", details: "Taking excessive personal time during work hours. Examples: Falsifying time records, claiming unworked overtime." },
+                    { name: "Unauthorized Resource Use", details: "Using company property/internet for personal reasons. Examples: Using company computers for personal business, unauthorized use of subscriptions." }
+                ]
+            },
+            {
+                category: "Emerging Ethical Challenges",
+                description: "Technological advancements and increasing globalization introduce novel and complex ethical dilemmas.",
+                items: [
+                    { name: "Data Privacy Concerns", details: "Improper handling or misuse of sensitive data. Examples: Sending unsolicited emails to unsubscribed customers, selling customer data, insecure data storage, AI processing sensitive data without consent." },
+                    { name: "Misuse of AI & Algorithms", details: "Biased or unaccountable AI systems. Examples: Racial/gender bias in AI, unfair profiling of healthcare data/resumes." },
+                    { name: "Supply Chain Ethics", details: "Unethical practices within the supply chain. Examples: Child labor, unsafe working conditions." }
+                ]
+            }
+        ];
+
+        const rootCausesData = [
+            {
+                category: "Organizational Culture & Leadership Failures",
+                description: "The ethical climate of an organization is profoundly shaped by its leadership and prevailing culture.",
+                items: [
+                    { name: "Unethical Leadership & 'Tone from the Top'", details: "Leaders engaging in unethical behavior or setting unrealistic targets normalize breaches. Managers are responsible for ~60% of workplace misconduct." },
+                    { name: "Toxic Workplace Culture", details: "Focus solely on performance metrics, disregard for values, pressure to cut corners. Overemphasis on 'cultural fit' can worsen toxicity." },
+                    { name: "Pressure to Meet Unrealistic Targets", details: "High demands and slogans like 'whatever it takes' encourage corner-cutting and fraud." },
+                    { name: "Lack of Psychological Safety", details: "Fear of retaliation prevents reporting misconduct, allowing it to fester. Psychological safety is the strongest predictor of reporting." }
+                ]
+            },
+            {
+                category: "Individual Motivations & Pressures",
+                description: "Beyond organizational dynamics, individual factors significantly contribute to unethical decisions.",
+                items: [
+                    { name: "Self-Interest & Greed", details: "Personal financial gain is a primary driver of fraud." },
+                    { name: "Rationalization", details: "Justifying unethical behavior as minor or common ('everyone does it')." },
+                    { name: "Lack of Awareness/Training", details: "Misunderstanding of what constitutes misconduct or company expectations." },
+                    { name: "Fear of Speaking Up", details: "Risk to career or standing prevents challenging unethical behavior." },
+                    { name: "Personal Difficulties", details: "Stress, conflicts, or addictions impacting judgment." },
+                    { name: "Complacency", details: "Experienced professionals becoming 'sloppy' with standards over time." }
+                ]
+            },
+            {
+                category: "Systemic & Regulatory Gaps",
+                description: "Deficiencies in formal structures and oversight mechanisms can create fertile ground for unethical practices.",
+                items: [
+                    { name: "Lack of Clear Policies & Enforcement", details: "Policies without serious consequences or regular reinforcement are ineffective." },
+                    { name: "Inconsistent Accountability & Fragmented Investigation Systems", details: "Over 35% of orgs use basic tools like spreadsheets for tracking; fewer than 30% use cross-functional investigation teams, leading to inconsistencies." },
+                    { name: "Insufficient Regulatory Oversight/Gaps", details: "Complex global environment, varied maturity of compliance programs, shortfalls in risk assessment. Frameworks may not cover new tech." },
+                    { name: "Complex Corporate Structures & Global Operations", details: "Decentralized operations and multi-jurisdictional exposure increase vulnerability to economic crime." }
+                ]
+            },
+            {
+                category: "Impact of Globalization & Technological Advancements",
+                description: "The interconnectedness of the modern world introduces unique ethical challenges.",
+                items: [
+                    { name: "Navigating Diverse Cultural Values", details: "What's ethical in one culture may be unethical in another, creating dilemmas for international professionals." },
+                    { name: "Rapid Technological Change Outpacing Ethical Guidelines", details: "Innovation often outstrips ethical guideline development, leading to vague or inconsistent rules, especially in AI and data privacy." },
+                    { name: "Increased Opportunities for Data Misuse & Corporate Espionage", details: "Technology creates new avenues for misconduct like privacy violations (surveillance) and corporate espionage." },
+                    { name: "Balancing Profit & Integrity in a Globalized Economy", details: "Intense competition can lead to ethical compromises to maximize profits, e.g., Volkswagen emissions scandal." }
+                ]
+            }
+        ];
+        
+        const solutionsData = [
+            {
+                category: "Strengthening Governance & Policy Frameworks",
+                description: "Effective ethical conduct begins with a strong foundation of clear policies and robust governance structures.",
+                items: [
+                    { name: "Developing Clear, Zero-Tolerance Policies", details: "Establish and communicate policies defining unacceptable behavior (e.g., harassment) with a zero-tolerance stance. Regularly update and integrate with compliance programs." },
+                    { name: "Robust HR and Payroll Systems", details: "Leverage advanced software with audit trails and approval workflows to enhance financial transparency and deter fraud." },
+                    { name: "Effective Compliance Programs", details: "Implement compliance-based ethics codes with clear guidelines, implementation procedures, and defined sanctions. Requires continuous review." },
+                    { name: "Self-Disclosure Incentives", details: "Regulatory bodies (e.g., DOJ) incentivize companies to voluntarily report misconduct, cooperate, and remediate, offering reduced penalties." },
+                    { name: "Clear Reporting Lines", details: "Establish confidential reporting systems ensuring safety for victims/witnesses to come forward without fear of reprisal." }
+                ]
+            },
+            {
+                category: "Cultivating an Ethical Organizational Culture",
+                description: "A strong ethical culture serves as the most potent defense against misconduct, permeating every aspect of organizational life.",
+                items: [
+                    { name: "Promoting Transparency and Open Communication", details: "Foster an environment for open dialogue about ethical concerns. Provide accessible platforms for employees to voice opinions, building trust." },
+                    { name: "Fostering Psychological Safety", details: "Create an environment where employees feel safe to speak up about misconduct without fear of retaliation, increasing reporting likelihood." },
+                    { name: "Leading by Example ('Tone from the Top')", details: "Leadership must visibly participate in ethics training and consistently model ethical behavior, demonstrating genuine commitment." },
+                    { name: "Aligning Business Objectives with Ethical Values", details: "Ensure performance metrics and goals are realistic and don't implicitly encourage unethical practices. Align objectives with social/environmental responsibilities." }
+                ]
+            },
+            {
+                category: "Enhancing Ethics Education & Training",
+                description: "Education and continuous learning are fundamental to building ethical competency across all levels of an organization.",
+                items: [
+                    { name: "Regular, Mandatory, and Specialized Ethics Training", details: "Conduct regular workshops covering harassment, fraud, conflicts of interest. Specialized training for managers/high-risk roles." },
+                    { name: "Incorporating Real-World Scenarios & Interactive Learning", details: "Use real-world situations, discussions, and case studies to help employees apply ethical principles in complex dilemmas." },
+                    { name: "Assessing Comprehension and Impact", details: "Move beyond tracking completion rates; assess training comprehension and track misconduct trends post-training to measure effectiveness." },
+                    { name: "Lifelong Learning and Skill Enhancement", details: "Professionals must commit to lifelong learning, staying abreast of evolving standards and ethical dilemmas through continuous education." }
+                ]
+            },
+            {
+                category: "Promoting Transparency & Accountability Mechanisms",
+                description: "Robust mechanisms for transparency and accountability are vital for detecting, investigating, and addressing misconduct effectively.",
+                items: [
+                    { name: "Implementing Confidential Incident Reporting Systems", details: "Establish HR platforms for tracking/resolving complaints, documenting repeat issues. Ensure no repercussions for reporting." },
+                    { name: "Modernizing Investigations", details: "Adopt integrated tools to enhance speed, transparency, and credibility of misconduct investigations, moving away from manual systems." },
+                    { name: "Consistent Disciplinary Actions", details: "Outline clear corrective actions with tiered consequences and no-warning dismissals for extreme misconduct. Apply consistently." },
+                    { name: "Regular Audits and Assessments", details: "Conduct internal audits, surprise inspections, and use automated monitoring. Regularly evaluate organizational culture and ethics-based decision-making." },
+                    { name: "Professional Codes of Conduct and Associations", details: "Associations create/uphold ethical codes, providing frameworks for decision-making and building public confidence." },
+                    { name: "Regulatory Agencies and Oversight", details: "Government bodies (e.g., OGE) oversee ethics programs, interpret laws, monitor compliance, and impose disciplinary actions." }
+                ]
+            }
+        ];
+
+        function createAccordionItems(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            data.forEach(section => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+
+                const titleH3 = document.createElement('h3');
+                titleH3.className = 'card-title flex justify-between items-center';
+                titleH3.textContent = section.category;
+                
+                const iconSpan = document.createElement('span');
+                iconSpan.innerHTML = '&#x25BC;'; // Down arrow
+                titleH3.appendChild(iconSpan);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'card-content details'; // Initially hidden
+
+                const descriptionP = document.createElement('p');
+                descriptionP.className = 'mb-2 sm:mb-4 italic text-gray-600';
+                descriptionP.textContent = section.description;
+                contentDiv.appendChild(descriptionP);
+
+                const ul = document.createElement('ul');
+                ul.className = 'list-none space-y-1 sm:space-y-3';
+                section.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong class="text-[#8A7F70]">${item.name}:</strong> ${item.details}`;
+                    ul.appendChild(li);
+                });
+                contentDiv.appendChild(ul);
+
+                cardDiv.appendChild(titleH3);
+                cardDiv.appendChild(contentDiv);
+                container.appendChild(cardDiv);
+
+                titleH3.addEventListener('click', () => {
+                    const currentlyOpen = cardDiv.classList.contains('expanded');
+                    
+                    // Toggle current accordion
+                    if (!currentlyOpen) {
+                        cardDiv.classList.add('expanded');
+                        contentDiv.classList.add('open');
+                        iconSpan.innerHTML = '&#x25B2;'; // Up arrow
+                    } else {
+                         cardDiv.classList.remove('expanded');
+                         contentDiv.classList.remove('open');
+                         iconSpan.innerHTML = '&#x25BC;'; // Down arrow
+                    }
+                });
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            createAccordionItems('practices-container', ethicalPracticesData);
+            createAccordionItems('causes-container', rootCausesData);
+            createAccordionItems('solutions-container', solutionsData);
+
+            // Navigation scroll behavior & active link
+            const navLinks = document.querySelectorAll('header nav a');
+            const sections = document.querySelectorAll('main section');
+
+            function changeActiveLink() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active-nav-link'));
+                if (navLinks[index]) {
+                   navLinks[index].classList.add('active-nav-link');
+                }
+            }
+
+            changeActiveLink(); // Initial call
+            window.addEventListener('scroll', changeActiveLink);
+
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Chart configurations
+            const chartColors = ['#8A7F70', '#BFAE99', '#A89F91', '#C5BBAF', '#D8CFC6'];
+            const chartFontColor = '#4A4A4A';
+
+            // Bribery Chart
+            const briberyCtx = document.getElementById('briberyChart')?.getContext('2d');
+            if (briberyCtx) {
+                new Chart(briberyCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Extractive', 'Construction', 'Transport & Storage', 'Info & Comm Tech', 'Other Sectors'],
+                        datasets: [{
+                            label: 'Bribery Cases by Sector',
+                            data: [15, 15, 15, 15, 40], // Assuming 60% is split among 4 main sectors, remaining 40% is "Other"
+                            backgroundColor: chartColors,
+                            borderColor: '#FAF8F5',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: chartFontColor }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}%`;
+                                    }
+                                }
+                            },
+                            title: {
+                                display: false,
+                                text: 'Bribery Cases by Sector (OECD Data)',
+                                color: chartFontColor,
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Manager Misconduct Chart
+            const managerMisconductCtx = document.getElementById('managerMisconductChart')?.getContext('2d');
+            if (managerMisconductCtx) {
+                new Chart(managerMisconductCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['By Managers', 'By Others'],
+                        datasets: [{
+                            data: [60, 40],
+                            backgroundColor: [chartColors[0], chartColors[2]],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: chartFontColor } },
+                            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}%` } },
+                            title: { display: false, text: 'Manager Responsibility', color: chartFontColor }
+                        }
+                    }
+                });
+            }
+            
+            // Spreadsheet Use Chart
+            const spreadsheetUseCtx = document.getElementById('spreadsheetUseChart')?.getContext('2d');
+            if (spreadsheetUseCtx) {
+                new Chart(spreadsheetUseCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Spreadsheets', 'Other Tools'],
+                        datasets: [{
+                            data: [35, 65], // Report says "Over 35%" use spreadsheets
+                            backgroundColor: [chartColors[1], chartColors[3]],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: chartFontColor } },
+                            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}%` } },
+                            title: { display: false, text: 'Misconduct Tracking', color: chartFontColor }
+                        }
+                    }
+                });
+            }
+
+            // Investigation Teams Chart
+            const investigationTeamsCtx = document.getElementById('investigationTeamsChart')?.getContext('2d');
+            if (investigationTeamsCtx) {
+                 new Chart(investigationTeamsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Use Teams', 'Do Not Use Teams'],
+                        datasets: [{
+                            data: [30, 70], // Report says "Fewer than 30%" use teams
+                            backgroundColor: [chartColors[0], chartColors[4]],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: chartFontColor } },
+                            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}%` } },
+                            title: { display: false, text: 'Cross-Functional Teams', color: chartFontColor }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
